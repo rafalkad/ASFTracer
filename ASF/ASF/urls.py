@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from Tracer_app.views import asf_incident_list, AddASFIncident
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('asf_incidents/', asf_incident_list, name='asf_incident_list'),
+    path('add_asf_incident/', AddASFIncident.as_view(), name='add_asf_incident'),
 ]
