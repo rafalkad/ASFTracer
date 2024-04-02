@@ -36,9 +36,11 @@ class BreedingFarm(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=200)
     pig_count = models.IntegerField()
+    asf_incidents = models.ManyToManyField('ASFIncident', related_name='breeding_farms', blank=True)
 
 
 class MedicalResource(models.Model):
     name = models.CharField(max_length=100)
     quantity = models.IntegerField()
     description = models.TextField()
+    asf_incidents = models.ManyToManyField('ASFIncident', related_name='medical_resources', blank=True)

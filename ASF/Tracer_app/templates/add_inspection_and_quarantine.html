@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Inspection and Quarantine</title>
+</head>
+<body>
+
+<h2>Add Inspection and Quarantine</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label for="id_inspection_date">Inspection Date:</label><br>
+    {{ form.inspection_date }}<br>
+    <label for="id_veterinarian">Veterinarian:</label><br>
+    {{ form.veterinarian }}<br>
+    <label for="id_results">Results:</label><br>
+    {{ form.results }}<br>
+    <label for="id_notes">Notes:</label><br>
+    {{ form.notes }}<br>
+
+    <label for="id_start_date">Start Date:</label><br>
+    {{ form.start_date }}<br>
+    <label for="id_end_date">End Date:</label><br>
+    {{ form.end_date }}<br>
+    <label for="id_location">Location:</label><br>
+    {{ form.location }}<br>
+
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>

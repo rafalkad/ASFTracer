@@ -16,10 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from Tracer_app.views import asf_incident_list, AddASFIncident
+from Tracer_app.views import asf_incident_list, AddASFIncident, AddAdditionalInfo, AddInspectionAndQuarantine, ShowInspectionsAndQuarantines
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('asf_incidents/', asf_incident_list, name='asf_incident_list'),
+    path('add_inspection_and_quarantine/', AddInspectionAndQuarantine.as_view(), name='add_inspection_and_quarantine'),
+    path('show_inspections_and_quarantines/', ShowInspectionsAndQuarantines.as_view(),
+         name='show_inspections_and_quarantines'),
     path('add_asf_incident/', AddASFIncident.as_view(), name='add_asf_incident'),
+    path('add_additional_info/', AddAdditionalInfo.as_view(), name='add_additional_info'),
+
 ]

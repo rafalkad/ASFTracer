@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Inspections and Quarantines</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h2>All Inspections and Quarantines</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inspection Date</th>
+      <th>Veterinarian</th>
+      <th>Results</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for inspection in inspections %}
+    <tr>
+      <td>{{ inspection.inspection_date }}</td>
+      <td>{{ inspection.veterinarian }}</td>
+      <td>{{ inspection.results }}</td>
+      <td>{{ inspection.notes }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<br>
+
+<table>
+  <thead>
+    <tr>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Location</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for quarantine in quarantines %}
+    <tr>
+      <td>{{ quarantine.start_date }}</td>
+      <td>{{ quarantine.end_date }}</td>
+      <td>{{ quarantine.location }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</body>
+</html>
