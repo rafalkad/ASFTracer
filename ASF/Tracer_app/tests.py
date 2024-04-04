@@ -19,24 +19,24 @@ def sample_asf_incidents():
     ASFIncident.objects.create(detection_date='2024-01-01', location='Location A', infected_count=5)
     ASFIncident.objects.create(detection_date='2024-02-01', location='Location B', infected_count=10)
 
-@pytest.mark.django_db
+@pytest.mark.first
 def test_asf_incident_list_view(client, sample_asf_incidents):
     response = client.get(reverse('asf_incident_list'))
     assert response.status_code == 200
     assert len(response.context['incidents']) == 2
 
-@pytest.mark.django_db
+@pytest.mark.second
 def test_filter_by_location(client, sample_asf_incidents):
     response = client.get(reverse('asf_incident_list'), {'location': 'Location A'})
     assert response.status_code == 200
     assert len(response.context['incidents']) == 1
 
-@pytest.mark.django_db
+@pytest.mark.third
 def test_add_inspection_and_quarantine_get(client):
     response = client.get(reverse('add_inspection_and_quarantine'))
     assert response.status_code == 200
 
-@pytest.mark.django_db
+@pytest.mark.fourth
 def test_add_inspection_and_quarantine_post(client):
     data = {
         'inspection_date': '2024-04-04',
@@ -50,7 +50,7 @@ def test_add_inspection_and_quarantine_post(client):
     response = client.post(reverse('add_inspection_and_quarantine'), data=data)
     assert response.status_code == 302
 
-@pytest.mark.django_db
+@pytest.mark.fifth
 def test_show_inspections_and_quarantines(client):
     inspection = VeterinaryInspection.objects.create(inspection_date='2024-04-04', veterinarian='Test Vet', results='Test Results')
     quarantine = Quarantine.objects.create(start_date='2024-04-04', end_date='2024-04-10', location='Test Location')
@@ -60,12 +60,12 @@ def test_show_inspections_and_quarantines(client):
     assert inspection in response.context['inspections']
     assert quarantine in response.context['quarantines']
 
-@pytest.mark.django_db
+@pytest.mark.sixth
 def test_add_asf_incident_get(client):
     response = client.get(reverse('add_asfincident'))
     assert response.status_code == 200
 
-@pytest.mark.django_db
+@pytest.mark.seventh
 def test_add_asf_incident_post(client):
     data = {
         'detection_date': '2024-04-04',
@@ -77,7 +77,7 @@ def test_add_asf_incident_post(client):
     response = client.post(reverse('add_asfincident'), data=data)
     assert response.status_code == 302
 
-@pytest.mark.django_db
+@pytest.mark.eighth
 def test_add_additional_info_get(client):
     response = client.get(reverse('add_additional_info'))
     assert response.status_code == 200
