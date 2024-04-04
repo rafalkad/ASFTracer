@@ -1,33 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Inspection and Quarantine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        button[type="submit"] {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h2>Add Inspection and Quarantine</h2>
+        <form method="post">
+            {% csrf_token %}
 
-<h2>Add Inspection and Quarantine</h2>
+            <label for="id_inspection_date">Inspection Date:</label><br>
+            {{ form.inspection_date }}<br>
+            <label for="id_veterinarian">Veterinarian:</label><br>
+            {{ form.veterinarian }}<br>
+            <label for="id_results">Results:</label><br>
+            {{ form.results }}<br>
+            <label for="id_notes">Notes:</label><br>
+            {{ form.notes }}<br>
 
-<form method="post">
-    {% csrf_token %}
+            <label for="id_start_date">Start Date:</label><br>
+            {{ form.start_date }}<br>
+            <label for="id_end_date">End Date:</label><br>
+            {{ form.end_date }}<br>
+            <label for="id_location">Location:</label><br>
+            {{ form.location }}<br>
 
-    <label for="id_inspection_date">Inspection Date:</label><br>
-    {{ form.inspection_date }}<br>
-    <label for="id_veterinarian">Veterinarian:</label><br>
-    {{ form.veterinarian }}<br>
-    <label for="id_results">Results:</label><br>
-    {{ form.results }}<br>
-    <label for="id_notes">Notes:</label><br>
-    {{ form.notes }}<br>
-
-    <label for="id_start_date">Start Date:</label><br>
-    {{ form.start_date }}<br>
-    <label for="id_end_date">End Date:</label><br>
-    {{ form.end_date }}<br>
-    <label for="id_location">Location:</label><br>
-    {{ form.location }}<br>
-
-    <button type="submit">Submit</button>
-</form>
-
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>

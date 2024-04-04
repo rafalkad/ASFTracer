@@ -1,14 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import ASFIncident, VeterinaryInspection, Quarantine, EpidemiologicalReport, BreedingFarm, MedicalResource
 from django.http import HttpResponse
-from django.template.loader import render_to_string
+from django.template.loader import get_template, render_to_string
 from weasyprint import HTML
 from .forms import AddASFIncidentForm, AdditionalInfoForm, InspectionAndQuarantineForm
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
 # Create your views here.
 
 
 def asf_incident_list(request):
+
+    #    View for displaying a list of ASF incidents.
+
     incidents = ASFIncident.objects.all()
     incidents = incidents.order_by('detection_date')
 
@@ -31,6 +37,9 @@ def asf_incident_list(request):
 
 
 class AddInspectionAndQuarantine(View):
+
+    #     View for adding inspections and quarantines.
+
     template_name = 'add_inspection_and_quarantine.html'
     form_class = InspectionAndQuarantineForm
 
@@ -64,12 +73,15 @@ class AddInspectionAndQuarantine(View):
             inspections = VeterinaryInspection.objects.all()
             quarantines = Quarantine.objects.all()
 
-            return render(request, self.template_name,
-                          {'form': form, 'inspections': inspections, 'quarantines': quarantines})
+            return redirect('show_inspections_and_quarantines')
+
         return render(request, self.template_name, {'form': form})
 
 
 class ShowInspectionsAndQuarantines(View):
+
+    #     View for displaying all inspections and quarantines.
+
     template_name = 'inspections_and_quarantines.html'
 
     def get(self, request):
@@ -78,9 +90,13 @@ class ShowInspectionsAndQuarantines(View):
         return render(request, self.template_name, {'inspections': inspections, 'quarantines': quarantines})
 
 
-class AddASFIncident(View):
+class AddASFIncident(LoginRequiredMixin, View):
+
+    #     View for adding ASF incidents.
+
     template_name = 'add_asfincident.html'
     form_class = AddASFIncidentForm
+    login_url = '/admin/login/'
 
     def get(self, request):
         form = self.form_class()
@@ -107,8 +123,12 @@ class AddASFIncident(View):
 
 
 class AddAdditionalInfo(View):
+
+    #     View for adding additional information related to ASF incidents.
+
     template_name = 'add_additional_info.html'
     form_class = AdditionalInfoForm
+    pdf_template_name = 'add_additional_info_pdf.html'
 
     def get(self, request):
         asf_incidents = ASFIncident.objects.all()
@@ -151,7 +171,64 @@ class AddAdditionalInfo(View):
             )
             medical_resource.asf_incidents.add(asf_incident)
 
-            return redirect('confirmation')
+            context = {
+                'epidemiological_report_description': epidemiological_report_description,
+                'preventive_measures': preventive_measures,
+                'breeding_farm_name': breeding_farm_name,
+                'breeding_farm_address': breeding_farm_address,
+                'pig_count': pig_count,
+                'medical_resource_name': medical_resource_name,
+                'quantity': quantity,
+                'medical_resource_description': medical_resource_description,
+            }
+            html_string = render_to_string(self.pdf_template_name, context)
+
+            pdf_file = HTML(string=html_string).write_pdf()
+
+            response = HttpResponse(pdf_file, content_type='application/pdf')
+            response['Content-Disposition'] = 'filename="additional_info.pdf"'
+            return response
 
         asf_incidents = ASFIncident.objects.all()
+
         return render(request, self.template_name, {'form': form, 'asf_incidents': asf_incidents})
+
+
+def notify_mailchimp_about_asf_incident(request):
+
+
+    # This view, is responsible for sending notifications about the latest ASF
+    # (African Swine Fever) incident to Mailchimp. It retrieves the latest ASF incident from the database, prepares the
+    # necessary data to be sent to Mailchimp, and then sends a
+    # POST request to the Mailchimp API to add a new subscriber to a specified mailing list.
+
+    incidents = ASFIncident.objects.all()
+    incidents = incidents.order_by('-detection_date')
+
+    if incidents.exists():
+        latest_incident = incidents.first()
+
+        data = {
+            "email_address": "piotrpawlak@wp.pl",
+            "status": "subscribed",
+            "merge_fields": {
+                "FNAME": "Subscriber",
+                "LNAME": "ASF Incident Notification",
+                "INCIDENT_DATE": latest_incident.detection_date.strftime("%Y-%m-%d"),
+                "LOCATION": latest_incident.location,
+            }
+        }
+
+        client = MailchimpMarketing.Client()
+        client.set_config({
+            "api_key": "05069cf65462e6feb173281e1843beb5-us18",
+            "server": "us18"
+        })
+
+        try:
+            response = client.lists.add_list_member("7b4f1ed81e", data)
+            return HttpResponse("Notification sent to Mailchimp successfully.")
+        except ApiClientError as e:
+            return HttpResponse(f"Failed to send notification to Mailchimp: {e.text}", status=500)
+    else:
+        return HttpResponse("No ASF incidents found.", status=404)

@@ -16,15 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from Tracer_app.views import asf_incident_list, AddASFIncident, AddAdditionalInfo, AddInspectionAndQuarantine, ShowInspectionsAndQuarantines
+from django.contrib.auth.views import LoginView
+from Tracer_app.views import asf_incident_list, AddASFIncident, AddAdditionalInfo, AddInspectionAndQuarantine, ShowInspectionsAndQuarantines, notify_mailchimp_about_asf_incident
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/login/', LoginView.as_view(), name='login'),
     path('asf_incidents/', asf_incident_list, name='asf_incident_list'),
     path('add_inspection_and_quarantine/', AddInspectionAndQuarantine.as_view(), name='add_inspection_and_quarantine'),
     path('show_inspections_and_quarantines/', ShowInspectionsAndQuarantines.as_view(),
          name='show_inspections_and_quarantines'),
     path('add_asf_incident/', AddASFIncident.as_view(), name='add_asf_incident'),
     path('add_additional_info/', AddAdditionalInfo.as_view(), name='add_additional_info'),
+    path('notify_mailchimp/', notify_mailchimp_about_asf_incident, name='notify_mailchimp'),
 
 ]
