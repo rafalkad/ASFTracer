@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from .models import ASFIncident, VeterinaryInspection, Quarantine, EpidemiologicalReport, BreedingFarm, MedicalResource
 from django.http import HttpResponse
-from django.template.loader import get_template, render_to_string
+from django.template.loader import render_to_string
 from weasyprint import HTML
 from .forms import AddASFIncidentForm, AdditionalInfoForm, InspectionAndQuarantineForm
 from django.views import View

@@ -2,10 +2,7 @@ from django.test import TestCase
 import pytest
 from django.urls import reverse
 from django.test import Client
-from django.test import RequestFactory
-from .views import asf_incident_list, AddInspectionAndQuarantine
 from .models import ASFIncident, VeterinaryInspection, Quarantine
-from .forms import InspectionAndQuarantineForm
 
 # Create your tests here.
 

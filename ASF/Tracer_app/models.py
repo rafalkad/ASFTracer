@@ -8,8 +8,8 @@ class ASFIncident(models.Model):
     detection_date = models.DateField()
     location = models.CharField(max_length=100)
     infected_count = models.IntegerField()
-    veterinary_inspections = models.ForeignKey('VeterinaryInspection', on_delete=models.CASCADE, default=None)
-    quarantines = models.ForeignKey('Quarantine', on_delete=models.CASCADE, default=None)
+    veterinary_inspections = models.ForeignKey('VeterinaryInspection', on_delete=models.CASCADE, null=True, default=None)
+    quarantines = models.ForeignKey('Quarantine', on_delete=models.CASCADE, null=True, default=None)
 
 
 class VeterinaryInspection(models.Model):
