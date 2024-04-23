@@ -216,7 +216,7 @@ class NotifyMailchimp(View):
 
             client = MailchimpMarketing.Client()
             client.set_config({
-                "api_key": "8ea44a1870d330f3ebc80bc47229f6b2-us18",
+                "api_key": "XXX",
                 "server": "us18"
             })
 
