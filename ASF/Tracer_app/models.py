@@ -11,6 +11,9 @@ class ASFIncident(models.Model):
     veterinary_inspections = models.ForeignKey('VeterinaryInspection', on_delete=models.CASCADE, null=True, default=None)
     quarantines = models.ForeignKey('Quarantine', on_delete=models.CASCADE, null=True, default=None)
 
+    def __str__(self):
+        return f"ASFIncident ({self.detection_date}: {self.location})"
+
 
 class VeterinaryInspection(models.Model):
     inspection_date = models.DateField()
@@ -18,11 +21,17 @@ class VeterinaryInspection(models.Model):
     results = models.TextField()
     notes = models.TextField()
 
+    def __str__(self):
+        return f"Veterinary Inspection ({self.id}: {self.inspection_date})"
+
 
 class Quarantine(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     location = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"Quarantine ({self.id}: {self.location})"
 
 
 class EpidemiologicalReport(models.Model):

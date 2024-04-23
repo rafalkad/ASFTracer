@@ -82,7 +82,16 @@ DATABASES = {
         'NAME': 'asf',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
+    },
+
+    'test': {
+
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'test_db.sqlite3',
+
     }
+
+
 }
 
 # DATABASES = {

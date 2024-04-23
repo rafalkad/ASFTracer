@@ -17,17 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView
-from Tracer_app.views import asf_incident_list, AddASFIncident, AddAdditionalInfo, AddInspectionAndQuarantine, ShowInspectionsAndQuarantines, notify_mailchimp_about_asf_incident
+from Tracer_app.views import ASFIncidentListView, AddASFIncident, AddAdditionalInfo, AddInspectionAndQuarantine, ShowInspectionsAndQuarantines, NotifyMailchimp, ASFMap
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/login/', LoginView.as_view(), name='login'),
-    path('asf_incidents/', asf_incident_list, name='asf_incident_list'),
+    path('asf_incidents/', ASFIncidentListView.as_view(), name='asf_incident_list'),
     path('add_inspection_and_quarantine/', AddInspectionAndQuarantine.as_view(), name='add_inspection_and_quarantine'),
     path('show_inspections_and_quarantines/', ShowInspectionsAndQuarantines.as_view(),
          name='show_inspections_and_quarantines'),
     path('add_asf_incident/', AddASFIncident.as_view(), name='add_asf_incident'),
     path('add_additional_info/', AddAdditionalInfo.as_view(), name='add_additional_info'),
-    path('notify_mailchimp/', notify_mailchimp_about_asf_incident, name='notify_mailchimp'),
+    path('notify_mailchimp/', NotifyMailchimp.as_view(), name='notify_mailchimp'),
+    path('asf_map/', ASFMap.as_view(), name='mapa'),
 
 ]

@@ -8,32 +8,30 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
+import folium
 # Create your views here.
 
 
-def asf_incident_list(request):
+class ASFIncidentListView(View):
+    def get(self, request):
 
-    #    View for displaying a list of ASF incidents.
+        # View for displaying a list of ASF incidents.
 
-    incidents = ASFIncident.objects.all()
-    incidents = incidents.order_by('detection_date')
+        incidents = ASFIncident.objects.all().order_by('detection_date')
 
-    if 'location' in request.GET:
-        location = request.GET['location']
-        incidents = incidents.filter(location__icontains=location)
+        location = request.GET.get('location')
+        if location:
+            incidents = incidents.filter(location__icontains=location)
 
-    if 'infected_count' in request.GET:
-        infected_count = request.GET['infected_count']
-        try:
-            incidents = incidents.filter(infected_count=int(infected_count))
-        except ValueError:
-            return HttpResponse("Invalid value for infected count.")
+        infected_count = request.GET.get('infected_count')
+        if infected_count:
+            try:
+                incidents = incidents.filter(infected_count=int(infected_count))
+            except ValueError:
+                return HttpResponse("Invalid value for infected count.")
 
-    context = {
-        'incidents': incidents
-    }
-
-    return render(request, 'incident_list.html', context)
+        context = {'incidents': incidents}
+        return render(request, 'incident_list.html', context)
 
 
 class AddInspectionAndQuarantine(View):
@@ -58,20 +56,18 @@ class AddInspectionAndQuarantine(View):
             end_date = form.cleaned_data['end_date']
             location = form.cleaned_data['location']
 
-            veterinary_inspection = VeterinaryInspection.objects.create(
+            VeterinaryInspection.objects.create(
                 inspection_date=inspection_date,
                 veterinarian=veterinarian,
                 results=results,
                 notes=notes
             )
 
-            quarantine = Quarantine.objects.create(
+            Quarantine.objects.create(
                 start_date=start_date,
                 end_date=end_date,
                 location=location
             )
-            inspections = VeterinaryInspection.objects.all()
-            quarantines = Quarantine.objects.all()
 
             return redirect('show_inspections_and_quarantines')
 
@@ -194,41 +190,62 @@ class AddAdditionalInfo(View):
         return render(request, self.template_name, {'form': form, 'asf_incidents': asf_incidents})
 
 
-def notify_mailchimp_about_asf_incident(request):
+class NotifyMailchimp(View):
+    def get(self, request):
 
+        # This view is responsible for sending notifications about the latest ASF
+        # (African Swine Fever) incident to Mailchimp. It retrieves the latest ASF incident from the database,
+        # prepares the necessary data to be sent to Mailchimp, and then sends a
+        # POST request to the Mailchimp API to add a new subscriber to a specified mailing list.
 
-    # This view, is responsible for sending notifications about the latest ASF
-    # (African Swine Fever) incident to Mailchimp. It retrieves the latest ASF incident from the database, prepares the
-    # necessary data to be sent to Mailchimp, and then sends a
-    # POST request to the Mailchimp API to add a new subscriber to a specified mailing list.
+        incidents = ASFIncident.objects.all().order_by('-detection_date')
 
-    incidents = ASFIncident.objects.all()
-    incidents = incidents.order_by('-detection_date')
+        if incidents.exists():
+            latest_incident = incidents.first()
 
-    if incidents.exists():
-        latest_incident = incidents.first()
-
-        data = {
-            "email_address": "piotrpawlak@wp.pl",
-            "status": "subscribed",
-            "merge_fields": {
-                "FNAME": "Subscriber",
-                "LNAME": "ASF Incident Notification",
-                "INCIDENT_DATE": latest_incident.detection_date.strftime("%Y-%m-%d"),
-                "LOCATION": latest_incident.location,
+            data = {
+                "email_address": "piotrkowal@wp.pl",
+                "status": "subscribed",
+                "merge_fields": {
+                    "FNAME": "Subscriber",
+                    "LNAME": "ASF Incident Notification",
+                    "INCIDENT_DATE": latest_incident.detection_date.strftime("%Y-%m-%d"),
+                    "LOCATION": latest_incident.location,
+                }
             }
-        }
 
-        client = MailchimpMarketing.Client()
-        client.set_config({
-            "api_key": "05069cf65462e6feb173281e1843beb5-us18",
-            "server": "us18"
-        })
+            client = MailchimpMarketing.Client()
+            client.set_config({
+                "api_key": "8ea44a1870d330f3ebc80bc47229f6b2-us18",
+                "server": "us18"
+            })
 
-        try:
-            response = client.lists.add_list_member("7b4f1ed81e", data)
-            return HttpResponse("Notification sent to Mailchimp successfully.")
-        except ApiClientError as e:
-            return HttpResponse(f"Failed to send notification to Mailchimp: {e.text}", status=500)
-    else:
-        return HttpResponse("No ASF incidents found.", status=404)
+            try:
+                return HttpResponse("Notification sent to Mailchimp successfully.")
+            except ApiClientError as error:
+                return HttpResponse(f"Failed to send notification to Mailchimp: {error.text}", status=500)
+        else:
+            return HttpResponse("No ASF incidents found.", status=404)
+
+
+class ASFMap(View):
+
+    def get(self, request):
+
+        # Generating  map and adding markers to the map
+
+        map = folium.Map(location=[52.2297, 21.0122], zoom_start=10)
+
+        folium.Marker([52.2297, 21.0122], popup='Warszawa').add_to(map)
+        folium.Marker([52.0791, 21.0306], popup='<b>Piaseczno</b><br><i>Veterinary Inspection (2023-06-01)</i>').add_to(map)
+        folium.Marker([51.3805, 23.5061], popup='<b>Łukcze</b><br><i>Veterinary Inspection (2023-06-01)</i>').add_to(map)
+        folium.Marker([50.0134, 18.2208], popup='<b>Piekary</b><br><i>Veterinary Inspection (2023-06-01)</i>').add_to(map)
+        folium.Marker([53.6136, 21.0062], popup='<b>Kleczkowo</b><br><i>Veterinary Inspection (2024-01-18)</i>').add_to(map)
+        folium.Marker([52.2297, 21.0122], popup='Location A').add_to(map)
+        folium.Marker([52.378, 19.267],   popup='Farm C').add_to(map)
+
+        map_html = map._repr_html_()
+
+        return render(request, 'asf_map.html', {'map_html': map_html})
+
+

@@ -1,8 +1,12 @@
 from django.test import TestCase
-import pytest
-from django.urls import reverse
+import os
+from django.conf import settings
 from django.test import Client
+from django.urls import reverse
 from .models import ASFIncident, VeterinaryInspection, Quarantine
+import pytest
+
+
 
 # Create your tests here.
 
