@@ -15,3 +15,5 @@ Notification to Mailchimp: The application sends notifications about the latest 
 allowing subscribers to stay informed about the latest developments.
 
 PDF Generation: Additional information related to ASF incidents can be exported to PDF format for easy sharing and distribution.
+
+ASF Map Generation: This Django view generates an interactive map with markers representing locations related to African Swine Fever (ASF) incidents. It utilizes the Folium library to generate the map and add markers.
