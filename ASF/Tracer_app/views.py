@@ -1,14 +1,17 @@
+import folium
+
 from django.shortcuts import render, redirect
-from .models import ASFIncident, VeterinaryInspection, Quarantine, EpidemiologicalReport, BreedingFarm, MedicalResource
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
-from .forms import AddASFIncidentForm, AdditionalInfoForm, InspectionAndQuarantineForm
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .models import ASFIncident, VeterinaryInspection, Quarantine, EpidemiologicalReport, BreedingFarm, MedicalResource
+from .forms import AddASFIncidentForm, AdditionalInfoForm, InspectionAndQuarantineForm
+
+from weasyprint import HTML
 import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
-import folium
 # Create your views here.
 
 

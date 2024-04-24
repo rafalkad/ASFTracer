@@ -1,5 +1,5 @@
 from django import forms
-from .models import ASFIncident, VeterinaryInspection, Quarantine, EpidemiologicalReport, BreedingFarm, MedicalResource
+from .models import ASFIncident
 
 
 class InspectionAndQuarantineForm(forms.Form):

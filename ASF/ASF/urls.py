@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView
-from Tracer_app.views import ASFIncidentListView, AddASFIncident, AddAdditionalInfo, AddInspectionAndQuarantine, ShowInspectionsAndQuarantines, NotifyMailchimp, ASFMap
+from Tracer_app.views import (ASFIncidentListView, AddASFIncident, AddAdditionalInfo, AddInspectionAndQuarantine,
+                              ShowInspectionsAndQuarantines, NotifyMailchimp, ASFMap)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

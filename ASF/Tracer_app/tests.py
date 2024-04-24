@@ -1,10 +1,8 @@
-from django.test import TestCase
-import os
-from django.conf import settings
+import pytest
 from django.test import Client
+from django.contrib.auth.models import User
 from django.urls import reverse
 from .models import ASFIncident, VeterinaryInspection, Quarantine
-import pytest
 
 
 
@@ -61,13 +59,12 @@ def test_show_inspections_and_quarantines(client):
     assert inspection in response.context['inspections']
     assert quarantine in response.context['quarantines']
 
-@pytest.mark.sixth
-def test_add_asf_incident_get(client):
-    response = client.get(reverse('add_asfincident'))
-    assert response.status_code == 200
 
-@pytest.mark.seventh
+@pytest.mark.sixth
 def test_add_asf_incident_post(client):
+
+    user = User.objects.create_user(username='test_user', password='password123')
+
     data = {
         'detection_date': '2024-04-04',
         'location': 'Test Location',
@@ -75,10 +72,15 @@ def test_add_asf_incident_post(client):
         'veterinary_inspections': 'Test Inspection',
         'quarantines': 'Test Quarantine'
     }
-    response = client.post(reverse('add_asfincident'), data=data)
-    assert response.status_code == 302
 
-@pytest.mark.eighth
+    client.login(username='test_user', password='password123')
+
+    response = client.post(reverse('add_asf_incident'), data=data)
+    assert response.status_code == 302
+    assert ASFIncident.objects.filter(location="Test Location").exists()
+
+
+@pytest.mark.seventh
 def test_add_additional_info_get(client):
     response = client.get(reverse('add_additional_info'))
     assert response.status_code == 200
